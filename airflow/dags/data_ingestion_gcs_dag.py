@@ -35,8 +35,8 @@ def format_to_parquet(src_file, dest_file):
         table.columns = table.columns.astype(str)
         table.to_parquet(dest_file)
     else:
-	    table = pv.read_csv(src_file)
-	    pq.write_table(table, dest_file)
+        table = pv.read_csv(src_file)
+        pq.write_table(table, dest_file)
 
 
 # NOTE: takes 20 mins, at an upload speed of 800kbps. Faster if your internet has a better upload speed
