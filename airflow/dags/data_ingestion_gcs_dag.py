@@ -8,6 +8,7 @@ from airflow.operators.python import PythonOperator
 
 from google.cloud import storage
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateExternalTableOperator
+import pandas as pd
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
 
@@ -26,8 +27,16 @@ def format_to_parquet(src_file, dest_file):
     if not src_file.endswith('.csv'):
         logging.error("Can only accept source files in CSV format, for the moment")
         return
-    table = pv.read_csv(src_file)
-    pq.write_table(table, dest_file)
+    head_table = pd.read_csv(src_file, header=None, nrows=1)
+    table = pd.read_csv(src_file, header=None, skiprows=1)
+    if len(head_table.columns) != len(table.columns):
+        logging.warning("Header columns number doesn`t equal table column number!")
+        table = pd.read_csv(src_file, names=head_table.columns)
+        table.columns = table.columns.astype(str)
+        table.to_parquet(dest_file)
+    else:
+	    table = pv.read_csv(src_file)
+	    pq.write_table(table, dest_file)
 
 
 # NOTE: takes 20 mins, at an upload speed of 800kbps. Faster if your internet has a better upload speed
