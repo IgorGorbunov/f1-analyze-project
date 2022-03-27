@@ -20,7 +20,7 @@ dataset_url = f"http://ergast.com/downloads/f1db_csv.zip"
 path_to_local_home = os.environ.get("AIRFLOW_HOME", "/opt/airflow/")
 csv_folder_name = "csv_data"
 parquet_file = zip_file.replace('.csv', '.parquet')
-BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", 'trips_data_all')
+BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", 'f1_data_all')
 
 
 def format_to_parquet(src_file, dest_file):
@@ -360,7 +360,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_circuits",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -375,7 +375,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_constructor_results",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -390,7 +390,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_constructor_standings",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -405,7 +405,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_constructors",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -420,7 +420,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_driver_standings",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -435,7 +435,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_drivers",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -450,7 +450,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_lap_times",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -465,7 +465,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_pit_stops",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -480,7 +480,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_qualifying",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -495,7 +495,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_races",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -510,7 +510,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_results",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -525,7 +525,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_seasons",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -540,7 +540,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_sprint_results",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
@@ -555,7 +555,7 @@ with DAG(
             "tableReference": {
                 "projectId": PROJECT_ID,
                 "datasetId": BIGQUERY_DATASET,
-                "tableId": "external_table",
+                "tableId": "external_table_status",
             },
             "externalDataConfiguration": {
                 "sourceFormat": "PARQUET",
