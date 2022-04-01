@@ -33,10 +33,11 @@ def format_to_parquet(src_file, dest_file):
         logging.warning("Header columns number doesn`t equal table column number!")
         table = pd.read_csv(src_file, names=head_table.columns)
         table.columns = table.columns.astype(str)
-        table.to_parquet(dest_file)
-    else:
-        table = pv.read_csv(src_file)
-        pq.write_table(table, dest_file)
+        table.to_csv(src_file, header=None, index=None)
+        # table.to_parquet(dest_file)
+    
+    table = pv.read_csv(src_file)
+    pq.write_table(table, dest_file)
 
 
 # NOTE: takes 20 mins, at an upload speed of 800kbps. Faster if your internet has a better upload speed
@@ -85,7 +86,7 @@ with DAG(
 
     unzip_files = BashOperator(
         task_id="unzip_files",
-        bash_command=f"unzip {path_to_local_home}/{zip_file} -d {path_to_local_home}/{csv_folder_name}"
+        bash_command=f"unzip -o {path_to_local_home}/{zip_file} -d {path_to_local_home}/{csv_folder_name}"
     )
 
     format_to_parquet_circuits = PythonOperator(
