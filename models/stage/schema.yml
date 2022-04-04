@@ -1,0 +1,11 @@
+
+version: 2
+
+sources:
+    - name: stage
+      #For bigquery:
+      database: zoomcampproject
+      schema: f1_data_all
+
+      tables:
+        - name: external_table_constructor_results
