@@ -9,3 +9,6 @@ sources:
 
       tables:
         - name: external_table_constructor_results
+        - name: external_table_races
+        - name: external_table_constructors
+        - name: f1_stage
