@@ -1,4 +1,5 @@
 import os
+import datetime, json
 import logging
 
 from airflow import DAG
@@ -9,6 +10,7 @@ from airflow.operators.python import PythonOperator
 from google.cloud import storage
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateExternalTableOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
+from airflow.providers.http.operators.http import SimpleHttpOperator
 import pandas as pd
 import pyarrow.csv as pv
 import pyarrow.parquet as pq
@@ -22,6 +24,13 @@ path_to_local_home = os.environ.get("AIRFLOW_HOME", "/opt/airflow/")
 csv_folder_name = "csv_data"
 parquet_file = zip_file.replace('.csv', '.parquet')
 BIGQUERY_DATASET = os.environ.get("BIGQUERY_DATASET", 'f1_data_all')
+
+dbt_header = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Token *****'
+}
+dbt_account_id = 55357
+dbt_job_id = 74147
 
 
 def format_to_parquet(src_file, dest_file):
@@ -70,7 +79,24 @@ default_args = {
     "retries": 1,
 }
 
-# NOTE: DAG declaration - using a Context Manager (an implicit way)
+def getDbtMessage(message):
+    return {'cause': message}
+    
+    
+def getDbtApiLink(jobId, accountId):
+    return 'accounts/{0}/jobs/{1}/run/'.format(accountId, jobId)
+  
+  
+def getDbtApiOperator(task_id, jobId, message='Triggered by Airflow', accountId=dbt_account_id):
+  return SimpleHttpOperator(
+    task_id=task_id,
+    method='POST',
+    data=json.dumps(getDbtMessage(message)),
+    http_conn_id='dbt_api', # https://cloud.getdbt.com/api/v2/
+    endpoint=getDbtApiLink(jobId, accountId),
+    headers=dbt_header
+  )
+
 with DAG(
     dag_id="data_ingestion_gcs_dag",
     schedule_interval="@daily",
@@ -573,10 +599,7 @@ with DAG(
     )
 
 
-    fact_table_fill = BigQueryExecuteQueryOperator(
-        task_id="fact_table_fill",
-        sql=f"CREATE OR REPLACE TABLE f1_data_all.fact_table AS (with constr_year_results as (SELECT distinct c.name, sum(points) over (partition by c.name, r.year) as constructor_result_points, r.year FROM f1_data_all.external_table_constructor_results cr inner join f1_data_all.external_table_races r on r.raceid = cr.raceid inner join f1_data_all.external_table_constructors c on c.constructorid = cr.constructorid), dds as (select name, constructor_result_points, year, rank() over (partition by year order by constructor_result_points desc) as place, constructor_result_points - (lead(constructor_result_points) over (partition by year order by constructor_result_points desc)) as difference, sum(constructor_result_points) over (partition by year) as year_points_sum, sum(constructor_result_points) over (partition by year order by constructor_result_points desc rows between current row and 1 following) as two_constr_points_sum from constr_year_results) select name, year, difference, constructor_result_points, difference*1.0/constructor_result_points as prc_own_points, year_points_sum, difference*1.0/year_points_sum as prc_all_points, two_constr_points_sum, difference*1.0/two_constr_points_sum as prc_top2_points from dds where place = 1 order by year)"
-    )
+    dbt_transformations = getDbtApiOperator('dbt_transformations', dbt_job_id)
 
     download_dataset_task >> unzip_files
     unzip_files >> format_to_parquet_circuits >> local_to_gcs_circuits >> bigquery_external_table_circuits >> cleanup
@@ -593,6 +616,5 @@ with DAG(
     unzip_files >> format_to_parquet_seasons >> local_to_gcs_seasons >> bigquery_external_table_seasons >> cleanup
     unzip_files >> format_to_parquet_sprint_results >> local_to_gcs_sprint_results >> bigquery_external_table_sprint_results >> cleanup
     unzip_files >> format_to_parquet_status >> local_to_gcs_status >> bigquery_external_table_status >> cleanup
-    cleanup >> fact_table_fill
+    cleanup >> dbt_transformations
     
-   
