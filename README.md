@@ -1,36 +1,41 @@
-# f1-analyze-project
-Project for analyze f1 history results
+# F1 analyze project
+## Table of Contents
+1. About the Project
+2. Key files and folders explained
+3. Work explained
+4. Virtual environment
+5. Deployment
+6. Pipeline start
 
+## 1. About the Project
+## 2. Key files and folders explained
+airflow - папка с эирфлоу
+models - dbt
+terraform
+readme.md
+dbt_project
 
-# Todo list
+## 3. Work explained
+### Architecture
+```mermaid
+graph LR
+a[Zip of CSVs] --> |Extract/Load| bb[[Google CLoud Storage]]:::cloud 
+bb --> b[(BigQuery)]:::cloud 
+b --> c>dbt transformation]:::cloud 
+c --> b
+e((Terraform)) --- b
+e((Terraform)) --- bb
+b --> d{{Google Data Studio}}:::cloud 
 
-1. Create GCP environment
-2. Deploy DCP environment with Terraform
-3. Create local airflow dag, putting files into BigQuery
-4. Deploy airflow on GCP
-5. Try to create some dashs
-6. Add transformations
-7. Create good dashs
+subgraph ide2 [Airflow]
+a
+b
+bb
+c
+end
 
-# Score goal  
-**Problem description**  
-2 points: Problem is well described and it's clear what the problem the project solves  
-**Cloud**  
-4 points: The project is developed on the clound and IaC tools are used  
-**Data ingestion (choose either batch or stream)**  
-Batch / Workflow orchestration   
-4 points: End-to-end pipeline: multiple steps in the DAG, uploading data to data lake  
-**Data warehouse**  
-2 points: Tables are created in DWH, but not optimized  
-4 points: Tables are partitioned and clustered in a way that makes sense for the upstream queries (with explanation)  
-**Transformations (dbt, spark, etc)**  
-2 points: Simple SQL transformation (no dbt or similar tools)  
-4 points: Tranformations are defined with dbt, Spark or similar technologies  
-**Dashboard**  
-4 points: A dashboard with 2 tiles  
-**Reproducibility**  
-4 points: Instructions are clear, it's easy to run the code, and the code works  
-
-**Total Score: 22 / 26**
-
-# Deploy
+classDef cloud fill:#daedfe;
+```
+## 4. Virtual environment
+## 5. Deployment
+## 6. Pipeline start
