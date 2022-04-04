@@ -1,4 +1,4 @@
-{{ config(materialized='table') }}
+{{ config(materialized='table', cluster_by = 'year') }}
 
 with constr_year_results as (
 SELECT distinct c.name, 

@@ -2,7 +2,7 @@
 
   create or replace table `zoomcampproject`.`dbt_igorbunov`.`f1_stage`
   
-  
+  cluster by year
   OPTIONS()
   as (
     

@@ -1,4 +1,4 @@
-{{ config(materialized='table') }}
+{{ config(materialized='table', cluster_by = 'year') }}
 
 select name, year, difference, 
   constructor_result_points, difference*1.0/constructor_result_points as prc_own_points, 
@@ -6,4 +6,3 @@ select name, year, difference,
   two_constr_points_sum, difference*1.0/two_constr_points_sum as prc_top2_points
 from {{ ref('f1_stage') }}
 where place = 1
-order by year

@@ -6,4 +6,3 @@ select name, year, difference,
   two_constr_points_sum, difference*1.0/two_constr_points_sum as prc_top2_points
 from `zoomcampproject`.`dbt_igorbunov`.`f1_stage`
 where place = 1
-order by year
